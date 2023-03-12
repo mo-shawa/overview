@@ -1,5 +1,6 @@
 import "./style.css"
 import * as THREE from "three"
+import { VRButton } from "three/examples/jsm/webxr/VRButton"
 
 const loader = new THREE.TextureLoader()
 const earthMap = loader.load(
@@ -17,10 +18,12 @@ const sizes = {
 }
 
 const renderer = new THREE.WebGLRenderer()
-
-renderer.setSize(sizes.width, sizes.height)
-document.body.append(renderer.domElement)
+renderer.xr.enabled = true
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setSize(sizes.width, sizes.height)
+
+document.body.append(renderer.domElement)
+document.body.append(VRButton.createButton(renderer))
 
 const camera = new THREE.PerspectiveCamera(
 	45,
@@ -39,10 +42,24 @@ window.addEventListener("resize", () => {
 	camera.updateProjectionMatrix()
 })
 
-camera.position.z = 3500
-camera.rotation.y = -Math.PI / 6
+// camera.position.z = 3500
+const cameraGroup = new THREE.Group()
+cameraGroup.add(camera) // Set the initial VR Headset Position.
+cameraGroup.position.z = 3500
+cameraGroup.rotation.y = -Math.PI / 6
 
-scene.add(camera)
+scene.add(cameraGroup)
+
+//When user turn on the VR mode.
+renderer.xr.addEventListener("sessionstart", function () {
+	scene.add(cameraGroup)
+	cameraGroup.add(camera)
+})
+//When user turn off the VR mode.
+renderer.xr.addEventListener("sessionend", function () {
+	scene.remove(cameraGroup)
+	cameraGroup.remove(camera)
+})
 
 const earthMesh = new THREE.Mesh(
 	new THREE.SphereGeometry(2000, 400, 400),
@@ -82,12 +99,15 @@ scene.add(sun)
 
 // scene.add(stars)
 
-renderer.render(scene, camera)
-
-function tick() {
-	requestAnimationFrame(tick)
+renderer.setAnimationLoop(() => {
 	earthMesh.rotation.y += 0.00005
 	renderer.render(scene, camera)
-}
+})
 
-tick()
+// function tick() {
+// 	requestAnimationFrame(tick)
+// 	earthMesh.rotation.y += 0.00005
+// 	renderer.render(scene, camera)
+// }
+
+// tick()

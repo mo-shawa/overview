@@ -1,14 +1,10 @@
-html,
-body,
-#root,
-.App,
 canvas {
 	position: fixed;
 	height: 100%;
 	margin: 0;
 	padding: 0;
 	top: 0;
-	left: 0;
+	right: 0;
 	outline: none;
 	overflow: hidden;
 	background: black;
