@@ -4,7 +4,7 @@ import { VRButton } from "three/examples/jsm/webxr/VRButton"
 
 const loader = new THREE.TextureLoader()
 const earthMap = loader.load(
-	"1_earth_16k.jpg",
+	"1_earth_8k.jpg",
 	() => console.log("success"),
 	() => console.log("progress"),
 	(error) => console.error(error)
